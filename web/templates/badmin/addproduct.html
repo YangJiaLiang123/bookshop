@@ -11,7 +11,7 @@
     <!--[if lt IE 9]>
     <script src="{% static 'badmin/js/html5.js' %}"></script>
     <![endif]-->
-     <script type="text/javascript" src="../../static/js/ie6.js"></script>
+    <script type="text/javascript" src="../../static/js/ie6.js"></script>
     <script src="{% static 'admin/js/jquery.js' %}"></script>
     <script src="{% static 'admin/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
 
@@ -29,50 +29,50 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/animate.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/newstyle2.css' %}">
 
-     <link rel="stylesheet" type="text/css" href="{% static 'css/plugins/summernote/summernote.css' %}">
-     <link rel="stylesheet" type="text/css" href="{% static 'css/plugins/summernote/summernote-bs3.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/plugins/summernote/summernote.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/plugins/summernote/summernote-bs3.css' %}">
 
 </head>
 
 <body>
 <header>
- <h1><img src="{% static 'admin/images/admin_logo.png' %}"/></h1>
- <ul class="rt_nav">
-  <li><a href="{% url 'admin_index' %}" target="_blank" class="website_icon">站点首页</a></li>
-  <li><a href="{% url 'admin.logout' %}" class="quit_icon">安全退出</a></li>
- </ul>
+    <h1><img src="{% static 'admin/images/admin_logo.png' %}"/></h1>
+    <ul class="rt_nav">
+        <li><a href="{% url 'admin_index' %}" target="_blank" class="website_icon">站点首页</a></li>
+        <li><a href="{% url 'admin.logout' %}" class="quit_icon">安全退出</a></li>
+    </ul>
 </header>
 <aside class="lt_aside_nav content mCustomScrollbar">
- <h2><a href="#">超级管理员：&nbsp;{{ userinfo.username }}</a></h2>
- <ul>
-   <li>
-   <dl>
-    <!--当前链接则添加class:active-->
-    <dt>图片管理</dt>
-    <dd><a href="{% url 'imagemanage' %}"  >图片上传</a></dd>
-   </dl>
-  </li>
-  <li>
-  <dl>
-    <!--当前链接则添加class:active-->
-    <dt>商品管理</dt>
-     <dd><a href="{% url 'addproduct' %}"class="active1">商品添加</a></dd>
-    <dd><a href="{% url 'categorym' %}">种类添加</a></dd>
-    <dd><a href="{% url 'product_list' %}">商品列表</a></dd>
-   </dl>
-  </li>
-  <li>
-   <dl>
-    <dt>订单管理</dt>
-    <dd><a href="#">订单列表</a></dd>
-    <dd><a href="#">订单详情</a></dd>
-   </dl>
-  </li>
+    <h2><a href="#">超级管理员：&nbsp;{{ userinfo.username }}</a></h2>
+    <ul>
+        <li>
+            <dl>
+                <!--当前链接则添加class:active-->
+                <dt>图片管理</dt>
+                <dd><a href="{% url 'imagemanage' %}"  >图片上传</a></dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <!--当前链接则添加class:active-->
+                <dt>商品管理</dt>
+                <dd><a href="{% url 'addproduct' %}"class="active1">商品添加</a></dd>
+                <dd><a href="{% url 'categorym' %}">种类添加</a></dd>
+                <dd><a href="{% url 'product_list' %}">商品列表</a></dd>
+            </dl>
+        </li>
+        <li>
+            <dl>
+                <dt>订单管理</dt>
+                <dd><a href="#">订单列表</a></dd>
+                <dd><a href="#">订单详情</a></dd>
+            </dl>
+        </li>
 
-  <li>
-   <p class="btm_infor">© YeQin 版权所有</p>
-  </li>
- </ul>
+        <li>
+            <p class="btm_infor">© YeQin 版权所有</p>
+        </li>
+    </ul>
 </aside>
 <section class="rt_wrap content mCustomScrollbar">
     <div id="wrapper">
@@ -99,75 +99,88 @@
                                 </div>
                             </div>
                             <div class="ibox-content">
-                                <form method="post" class="form-horizontal" id="ishow-form">
+                                <form action="{% url 'addproduct' %}" method="post" class="form-horizontal" id="ishow-form" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">商品种类</label>
+                                        <label class="col-sm-2 control-label">书籍名称</label>
                                         <div class="col-sm-10">
-                                              <select class="form-control m-b f-sec-type" name="f-sec-type">
-            	                                {% for category in categorys %}
-            	                                <option value="{{category.cid}}">{{category.kind}}</option>
-                                                {% endfor %}
-                                             </select>
+                                            <!--                                              <select class="form-control m-b f-sec-type" name="f-sec-type">-->
+                                            <!--            	                                {% for category in categorys %}-->
+                                            <!--            	                                <option value="{{category.cid}}">{{category.kind}}</option>-->
+                                            <!--                                                {% endfor %}-->
+                                            <!--                                             </select>-->
+                                            <input type="text" class="form-control" name="name" required="" value="">
                                         </div>
                                     </div>
                                     <div class="hr-line-dashed"></div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">产品名称</label>
+                                        <label class="col-sm-2 control-label">书籍作者</label>
                                         <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="proname" required="" value="">
+                                            <input type="text" class="form-control" name="author" required="" value="">
                                         </div>
                                     </div>
-                                     <div class="hr-line-dashed"></div>
-                                    <div class="form-group">
-                                        <label class="col-sm-2 control-label">产品介绍</label>
-                                        <div class="col-sm-10">
-                                            <input type="text" class="form-control" name="proname2" required="" >
-                                        </div>
-                                    </div>
-
                                     <div class="hr-line-dashed"></div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">产品价格</label>
+                                        <label class="col-sm-2 control-label">价格</label>
                                         <div class="col-sm-10">
-                                            <input type="number" class="form-control" name="proprice" required="">
+                                            <input type="text" class="form-control" name="price" required="" >
                                         </div>
                                     </div>
 
                                     <div class="hr-line-dashed"></div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">产品折扣</label>
+                                        <label class="col-sm-2 control-label">出版社</label>
                                         <div class="col-sm-10">
-                                            <input type="number" class="form-control" name="discount">
+                                            <input type="text" class="form-control" name="publisher" required="">
                                         </div>
                                     </div>
+
                                     <div class="hr-line-dashed"></div>
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">产品图链接</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" name="imglink">
-                                        </div>
-                                        <button class="btn btn-primary new-imgurl" type="button">
-                                            添加
-                                        </button>
-{#                                        <button class="btn btn-primary new-ishow" type="button">#}
-{#                                            <a href="{% url 'imagemanage' %}">图库</a>#}
-{#                                        </button>#}
-                                         <button class="btn btn-primary new-ishow" type="button">
-                                            <a href="{% url 'imagemanage' %}">图库</a>
-                                        </button>
-
-
-                                        <div class="image-list-wrp">
-
+                                        <label class="col-sm-2 control-label">出版时间</label>
+                                        <div class="col-sm-10">
+                                            <input type="date" name="pub_date" class="form-control">
                                         </div>
                                     </div>
-                                    <div class="hr-line-dashed"></div>
 
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">简介</label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" name="abstract" rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <!--                                    <div class="hr-line-dashed"></div>-->
+                                    <!--                                    <div class="form-group">-->
+                                    <!--                                        <label class="col-sm-2 control-label">产品图链接</label>-->
+                                    <!--                                        <div class="col-sm-8">-->
+                                    <!--                                            <input type="text" class="form-control" name="imglink">-->
+                                    <!--                                        </div>-->
+                                    <!--                                        <button class="btn btn-primary new-imgurl" type="button">-->
+                                    <!--                                            添加-->
+                                    <!--                                        </button>-->
+                                    <!--                                        {#                                        <button class="btn btn-primary new-ishow" type="button">#}-->
+                                    <!--                                        {#                                            <a href="{% url 'imagemanage' %}">图库</a>#}-->
+                                    <!--                                        {#                                        </button>#}-->
+                                    <!--                                        <button class="btn btn-primary new-ishow" type="button">-->
+                                    <!--                                            <a href="{% url 'imagemanage' %}">图库</a>-->
+                                    <!--                                        </button>-->
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">书籍封面</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" name="img_url">
+                                            <br>
+                                            <img class="readimg" style="max-width:200px;" src="" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="image-list-wrp">
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
                                     <div class="form-group">
                                         <div class="col-sm-4 col-sm-offset-2">
-                                            <input class="btn btn-primary new-pro" type="button" value="新增产品">
+                                            <input class="btn btn-primary" type="submit" value="新增产品">
                                         </div>
                                     </div>
                                 </form>
@@ -178,9 +191,18 @@
             </div>
 
         </div>
-</div>
+    </div>
 </section>
-
+<script>
+    $('input[name=img_url]').change(function(){
+        var file = this.files[0]
+        var reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload=function(e){
+            $('.readimg').attr('src', this.result)
+        }
+    })
+  </script>
 
 <!-- Mainly scripts -->
 
