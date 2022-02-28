@@ -102,73 +102,93 @@
                         </div>
 
                         <div class="ibox-content">
-                            <form method="post" class="form-horizontal" id="ishow-form">
-                               {% csrf_token %}
+                            <form action="{% url 'modproductdata' %}" method="post" class="form-horizontal" id="ishow-form" enctype="multipart/form-data">
+                                    {% csrf_token %}
                                     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                    <input type="hidden" name="id" value="{{ book.id }}">
                                     <div class="form-group">
-                                        <label class="col-sm-2 control-label">商品种类</label>
+                                        <label class="col-sm-2 control-label">书籍名称</label>
                                         <div class="col-sm-10">
-                                              <select class="form-control m-b f-sec-type" name="f-sec-type">
-            	                                {% for category in categorys %}
-            	                                <option value="{{category.cid}}">{{category.kind}}</option>
-                                                {% endfor %}
-                                             </select>
+                                            <!--                                              <select class="form-control m-b f-sec-type" name="f-sec-type">-->
+                                            <!--            	                                {% for category in categorys %}-->
+                                            <!--            	                                <option value="{{category.cid}}">{{category.kind}}</option>-->
+                                            <!--                                                {% endfor %}-->
+                                            <!--                                             </select>-->
+                                            <input type="text" class="form-control" name="name" required="" value="{{ book.name }}">
                                         </div>
                                     </div>
-                                <div class="hr-line-dashed"></div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">产品名称</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="proname" required="" value="{{ thispro.pdname }}">
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">书籍作者</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="author" required="" value="{{ book.author}}">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="hr-line-dashed"></div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">产品价格</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" name="proprice" required=""  value="{{ thispro.pdprice }}">
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">价格</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="price" required="" value="{{ book.price}}">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="hr-line-dashed"></div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">产品折扣</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" class="form-control" name="discount" value="{{ thispro.discount }}">
-                                    </div>
-                                </div>
-                                <div class="hr-line-dashed"></div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">产品图链接</label>
-                                    <div class="col-sm-8">
-                                        <input type="text" class="form-control" name="imglink">
-                                    </div>
-                                    <button class="btn btn-primary new-imgurl" type="button">
-                                        添加
-                                    </button>
-                                    <button class="btn btn-primary new-ishow" type="button">
-                                        <a href="{% url "imagemanage" %}" target="_blank">图库</a>
-                                    </button>
-                                    <div class="image-list-wrp">
-                                        {% for item in imglist  %}
-                                            <span class="new-img-preview"><img src="{{ item }}"/><i class="close-icon">×</i></span>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <div class="hr-line-dashed"></div>
-                                 <div class="form-group">
-                                    <label class="col-sm-2 control-label">产品介绍</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" name="pdInfo" required="" value="{{ thispro.pdInfo}}">
-                                    </div>
-                                </div>
 
-                                <div class="hr-line-dashed"></div>
-                                <div class="form-group">
-                                    <div class="col-sm-4 col-sm-offset-2">
-                                        <input class="btn btn-primary new-pro" type="button" value="修改产品">
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">出版社</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" name="publisher" required="" value="{{ book.publisher}}">
+                                        </div>
                                     </div>
-                                </div>
-                            </form>
+
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">出版时间</label>
+                                        <div class="col-sm-10">
+                                            <input type="date" name="pub_date" class="form-control" value="{{ book.pub_date|date:'Y-m-d' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">简介</label>
+                                        <div class="col-sm-10">
+                                            <textarea class="form-control" name="abstract" rows="3">{{ book.abstract}}</textarea>
+                                        </div>
+                                    </div>
+                                    <!--                                    <div class="hr-line-dashed"></div>-->
+                                    <!--                                    <div class="form-group">-->
+                                    <!--                                        <label class="col-sm-2 control-label">产品图链接</label>-->
+                                    <!--                                        <div class="col-sm-8">-->
+                                    <!--                                            <input type="text" class="form-control" name="imglink">-->
+                                    <!--                                        </div>-->
+                                    <!--                                        <button class="btn btn-primary new-imgurl" type="button">-->
+                                    <!--                                            添加-->
+                                    <!--                                        </button>-->
+                                    <!--                                        {#                                        <button class="btn btn-primary new-ishow" type="button">#}-->
+                                    <!--                                        {#                                            <a href="{% url 'imagemanage' %}">图库</a>#}-->
+                                    <!--                                        {#                                        </button>#}-->
+                                    <!--                                        <button class="btn btn-primary new-ishow" type="button">-->
+                                    <!--                                            <a href="{% url 'imagemanage' %}">图库</a>-->
+                                    <!--                                        </button>-->
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">书籍封面</label>
+                                        <div class="col-sm-10">
+                                            <input type="file" name="img_url">
+                                            <input type="hidden" name="old_url" value="{{ book.img_url }}">
+                                            <br>
+                                            <img class="readimg" style="max-width:200px;" src="{{ book.img_url }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="image-list-wrp">
+                                    </div>
+                                    <div class="hr-line-dashed"></div>
+                                    <div class="form-group">
+                                        <div class="col-sm-4 col-sm-offset-2">
+                                            <input class="btn btn-primary" type="submit" value="确认修改">
+                                        </div>
+                                    </div>
+                                </form>
                         </div>
                     </div>
                 </div>
