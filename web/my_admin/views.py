@@ -110,7 +110,9 @@ def admin_product_list(request):
         current_page = paginator.page(paginator.num_pages)
     data = {
         'products': current_page,
-        'page': current_page
+        'page': current_page,
+        'page_num': page,
+        'paginator': paginator
     }
     return render(request, 'badmin/product_list.html',data)
 

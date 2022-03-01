@@ -122,11 +122,17 @@
             {% endfor %}
         </table>
         <aside class="paging">
-            {% if page.has_previous  %}
+            {% load poll_extras %}
+<!--            {% jia 2 3 %}-->
+<!--            {{ 'iloveyou'|kong_upper }}-->
+
+            {% if page.has_previous %}
             <a href="{% url 'product_list' %}?page_num={{ page.previous_page_number }}">上一页</a>
             {% else %}
             <a href="#">上一页</a>
             {% endif %}
+
+            {% pagess paginator.num_pages request %}
 
             {% if page.has_next  %}
             <a href="{% url 'product_list' %}?page_num={{ page.next_page_number }}">下一页</a>
