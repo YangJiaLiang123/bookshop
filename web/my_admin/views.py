@@ -30,14 +30,17 @@ def adminlogin(request):
             # print(password)
             password = check_password(data.get('password'), obj.password)
             if password:
+                request.session['adminUser'] = data['username']
                 return render(request, 'badmin/admin_index.html', {'userinfo': data})
             else:
                 error = '密码输入错误'
                 return render(request, 'badmin/login.html', {'tip': error})
 
 
-def logout():
-    return None
+def logout(requset):
+    requset.session.flush()
+    url = reverse('adminlogin')
+    return HttpResponse(f'<script>location.href="{url}";</script>')
 
 
 def imagemanage():
@@ -62,7 +65,8 @@ def categorydelete():
 
 def addproduct(request):
     if request.method == 'GET':
-        return render(request, 'badmin/addproduct.html')
+        username = request.session.get('adminUser', '')
+        return render(request, 'badmin/addproduct.html',{'username': username})
     else:
         data =request.POST.dict()
         data.pop('csrfmiddlewaretoken')
@@ -108,11 +112,13 @@ def admin_product_list(request):
         current_page = paginator.page(1)
     except EmptyPage:  # 参数为空，显示最后一页面
         current_page = paginator.page(paginator.num_pages)
+    username = request.session.get('adminUser', '')
     data = {
         'products': current_page,
         'page': current_page,
         'page_num': page,
-        'paginator': paginator
+        'paginator': paginator,
+        'username': username
     }
     return render(request, 'badmin/product_list.html',data)
 
@@ -161,8 +167,8 @@ def modproduct(request):
     id = request.GET.get('p_id')
     data = models.Book.objects.get(id = id)
     print(data.name)
-
-    return render(request, 'badmin/modproduct.html', {'book': data})
+    username = request.session.get('adminUser', '')
+    return render(request, 'badmin/modproduct.html', {'book': data, 'username': username})
 
 
 def modproductdata(requset):
