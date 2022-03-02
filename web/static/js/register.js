@@ -3,10 +3,15 @@ $(function () {
     var password = false;
 	var cpassword = false;
 	var email = false;
+	var tel = false;
 	/*var error_check = false;*/
 
-	$('#user_name').blur(function() {  /*失去焦点执行*/
+	$('#txt_username').blur(function() {  /*失去焦点执行*/
 		check_user_name();
+	});
+
+    $('#txt_phone').blur(function() {  /*失去焦点执行*/
+		check_tel();
 	});
 
 	$('#txt_password').blur(function() {
@@ -21,20 +26,51 @@ $(function () {
 		check_email();
 	});
 
-    function check_user_name() {
-        var len = $('#txt_username').val().length    /*val 返回被选中的值*/
-        if(len<5||len>20)
+    function check_tel() {
+
+        var re = /^1\d{10}$/
+        if (re.test($('#txt_phone').val()) == false)
         {
-            $('#txt_username').next().html('请输入5-20个字符的用户名');
+            console.log('9999999')
+            $('#txt_phone').next().html('你输入的号码格式不正确');
+			$('#txt_phone').next().show();
+			tel = true;
+        }
+        else
+        {   /*get() 方法通过远程 HTTP GET 请求载入信息。*/
+            console.log('telteltel')
+            $.get('/register_tel/?tel='+$('#txt_phone').val(), function (data, status) {
+				if (data.count == 1){
+					$('#txt_phone').next().html('该手机号已存在').show();
+					tel = true;
+				}
+				else
+				{
+					$('#txt_phone').next().hide();
+					tel = false;
+				}
+            });
+        }
+    }
+
+    function check_user_name() {
+        var len = $('#txt_username').val().length;    /*val 返回被选中的值*/
+        if(len<3||len>20)
+        {
+            $('#txt_username').next().html('请输入3-20个字符的用户名');
             $('#txt_username').next().show();
             name = true;
-        }else
+        }
+        else
         {   /*get() 方法通过远程 HTTP GET 请求载入信息。*/
-            $.get('/user/register_exist/?uname='+$('#txt_username').val(), function (data) {
+            $.get('/register_exist/?uname='+$('#txt_username').val(), function (data) {
+                console.log('namename')
 				if (data.count == 1){
 					$('#txt_username').next().html('用户名已存在').show();
 					name = true;
-				} else {
+				}
+				else
+				{
 					$('#txt_username').next().hide();
 					name = false;
 				}
@@ -73,6 +109,7 @@ $(function () {
 			 cpassword = false;
 		}
     }
+
     function check_email(){
 		var re = /^[a-z0-9][\w\.\-]*@[a-z0-9\-]+(\.[a-z]{2,5}){1,2}$/;
 
@@ -94,7 +131,7 @@ $(function () {
             check_cpassword();
             check_email();
 
-          if(name == false && password == false && cpassword == false && email == false)
+          if(name == false && password == false && cpassword == false && email == false && tel == false)
           {
              $('#reFrom').submit();
               console.log('提交成功');
