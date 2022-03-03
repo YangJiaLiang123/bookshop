@@ -36,8 +36,8 @@
 			<div class="welcome fl">欢迎来到图书商城</div>
 			<div class="fr">
 				<div class="login_btn fl">
-					{% if userinfo.islogin %}
-					欢迎您：<em>{{ userinfo.username }}</em>
+					{% if username %}
+					欢迎您：<em>{{ username }}</em>
 					<span>|</span>
 					<a href="{% url 'bUser :logout' %}">退出</a>
 					{% else %}
@@ -73,13 +73,13 @@
                     </dd>
                     <dt id="class640" name="personalinformation">个人中心</dt>
                     <dd>
-                         <a href="{% url "bUser :personalinfo" %}" id="a_personal">个人信息</a>
+                         <a href="{% url 'bUser :personalinfo' %}" id="a_personal">个人信息</a>
                     </dd>
                     <dd>
-                        <a href="{% url "bUser :eidtpwd" %}" id="a_eidpwd">修改密码</a>
+                        <a href="{% url 'bUser :eidtpwd' %}" id="a_eidpwd">修改密码</a>
                     </dd>
                     <dd>
-                        <a href="{% url "bUser :adress" %}" id="a_adress">收货地址</a>
+                        <a href="{% url 'bUser :adress' %}" id="a_adress">收货地址</a>
                     </dd>
                 </dl>
             </div>
@@ -91,7 +91,7 @@
 
             <div class="shadow_box">
                 <div class="body">
-                    <form  id='reFrom' action=""  method="post">
+                    <form  id='reFrom' action="{% url 'bUser :eidtpwd' %}"  method="post">
                          {% csrf_token %}
                         <table width="100%" cellspacing="0" cellpadding="0" border="0">
                             <tr>

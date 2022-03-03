@@ -64,13 +64,51 @@ def editaddress():
     return None
 
 
-def getaddress():
+def getaddress(request):
+    usename = request.session.get('username')
+    
     return None
 
 
-def editpassword():
-    return None
+def editpassword(request):
+    if request.method == 'GET':
+        return render(request, 'bshop_user/editpwd.html')
+    else:
+        data = request.POST.dict()
+        data.pop('csrfmiddlewaretoken')
+        obj = models.UserInfo.objects.filter(username=request.session.get('username'))
+        print('121111', obj[0].username, obj[0].password)
+        if check_password(data.get('oldpassword'), obj[0].password):
+            password = make_password(data.get('newpassword'), None, 'pbkdf2_sha256')
+            print(password)
+            # obj[0].password = password
+            # print(obj[0].password)
+            # obj[0].save()
+            obj.update(password=password)
+            print(obj[0].password)
+            request.session.flush()
+            url = reverse('bUser :login')
+            return HttpResponse('<script>alert("密码修改成功，请重新登录");location.href="'+url+'";</script>')
+            # return render(request, 'bshop_user/editpwd.html')
+        else:
+            context = {'error_pwd': 1, 'oldpassword': '', 'newpassword': '', 'username': request.session.get('username')}
+            return render(request, 'bshop_user/editpwd.html', context)
 
 
-def personalinfo():
-    return None
+def personalinfo(request):
+    username = request.session.get('username')
+    print(username)
+    obj = models.UserInfo.objects.filter(username = username)
+    context = {
+        'username': username,
+        'telephone': obj[0].telephone,
+        'email': obj[0].email
+    }
+    return render(request, 'bshop_user/personalinfo.html', context)
+
+
+
+
+
+
+
