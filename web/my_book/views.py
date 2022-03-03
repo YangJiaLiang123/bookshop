@@ -7,18 +7,21 @@ from . import models
 
 # Create your views here.
 def index(request):
-    return render(request, 'bshop_user/login.html')
+    return render(request, 'bshop/index.html')
 
 def register(request):
-    data = request.POST.dict()
-    data.pop('csrfmiddlewaretoken')
-    data.pop('chb_agreement')
-    data.pop('check_password')
-    password = make_password(data.get('password'), None, 'pbkdf2_sha256')
-    data['password'] = password
-    obj = models.UserInfo(**data)
-    obj.save()
-    return render(request, 'bshop_user/login.html')
+    if request.method == 'GET':
+        return render(request, 'bshop_user/register.html')
+    else:
+        data = request.POST.dict()
+        data.pop('csrfmiddlewaretoken')
+        data.pop('chb_agreement')
+        data.pop('check_password')
+        password = make_password(data.get('password'), None, 'pbkdf2_sha256')
+        data['password'] = password
+        obj = models.UserInfo(**data)
+        obj.save()
+        return render(request, 'bshop_user/login.html')
 
 def register_tel(request):
     tel = request.GET.get('tel')
@@ -31,12 +34,30 @@ def register_exist(request):
     return JsonResponse({'count': count})
 
 
-def login():
-    return None
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'bshop_user/login.html')
+    else:
+        data = request.POST.dict()
+        data.pop('csrfmiddlewaretoken')
+        data.pop('autologin')
+        obj = models.UserInfo.objects.filter(username = data['username'])
+        if obj.count() == 0:
+            context = {'error_name': 1, 'error_pwd': 0, 'username': data['username'], 'password': data['password']}
+            return render(request, 'bshop_user/login.html', context)
+        else:
+            if check_password(data.get('password'), obj[0].password):
+                request.session['username'] = obj[0].username
+                return render(request,'bshop/index.html',{'data': data})
+            else:
+                context = {'error_name': 0, 'error_pwd': 1, 'username': data['username'], 'password': data['password']}
+                return render(request, 'bshop_user/login.html', context)
 
 
-def logout():
-    return None
+def logout(request):
+    request.session.flush()
+    url = reverse('bUser :login')
+    return HttpResponse(f'<script>location.href="{url}";</script>')
 
 
 def editaddress():
