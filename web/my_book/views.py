@@ -60,19 +60,45 @@ def logout(request):
     return HttpResponse(f'<script>location.href="{url}";</script>')
 
 
-def editaddress():
-    return None
+def editaddress(request):
+    data = request.POST.dict()
+    data.pop('csrfmiddlewaretoken')
+    print(data)
+    username = request.session.get('username')
+    obj = models.UserInfo.objects.filter(username=username)
+    print(obj[0].id)
+    data['userinfo'] = obj[0]
+    print(data)
+    address = models.Address(**data)
+    address.save()
+    return HttpResponse(request, 'bshop_user/address.html',{'username': username})
 
 
 def getaddress(request):
-    usename = request.session.get('username')
-    
-    return None
+    username = request.session.get('username')
+    obj = models.UserInfo.objects.filter(username=username)
+    # print(obj[0].username)
+    print(obj.count())
+    address = obj[0].userinfo_address.all()
+    print(len(address))
+    if len(address) == 0:
+        context = {
+            'username': username,
+            'addresss': '无地址，请去添加'
+        }
+        return render(request, 'bshop_user/address.html', context)
+    else:
+        context = {
+            'username': username,
+            'address': address[0],
+            'addresss': address[0].province + address[0].city + address[0].district + address[0].detail
+        }
+        return render(request, 'bshop_user/address.html', context)
 
 
 def editpassword(request):
     if request.method == 'GET':
-        return render(request, 'bshop_user/editpwd.html')
+        return render(request, 'bshop_user/editpwd.html', {'username': request.session.get('username')})
     else:
         data = request.POST.dict()
         data.pop('csrfmiddlewaretoken')
