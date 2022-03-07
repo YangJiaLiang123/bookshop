@@ -3,11 +3,15 @@ from django.shortcuts import render, HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 from django.urls import reverse
 
+from my_admin.models import Book
 from . import models
 
 # Create your views here.
 def index(request):
-    return render(request, 'bshop/index.html')
+    datas = Book.objects.all()[0:4]
+    username = request.session.get('username')
+    data = {'username': username}
+    return render(request, 'bshop/index.html', {'datas': datas, 'data': data})
 
 def register(request):
     if request.method == 'GET':
