@@ -3,8 +3,8 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='admin_index'),
-    path('login/', views.adminlogin, name='adminlogin'),
+    path('index', views.index, name='admin_index'),
+    path('', views.adminlogin, name='adminlogin'),
     path('logout/', views.logout, name='admin.logout'),
     path('imagefile/', views.imagemanage, name='imagemanage'),
     path('imageupload/', views.imageupload, name='imageupload'),
