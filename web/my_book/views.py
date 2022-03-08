@@ -52,7 +52,8 @@ def login(request):
         else:
             if check_password(data.get('password'), obj[0].password):
                 request.session['username'] = obj[0].username
-                return render(request,'bshop/index.html',{'data': data})
+                # return render(request,'bshop/index.html',{'data': data})
+                return index(request)
             else:
                 context = {'error_name': 0, 'error_pwd': 1, 'username': data['username'], 'password': data['password']}
                 return render(request, 'bshop_user/login.html', context)
