@@ -1,8 +1,8 @@
-$(document).ready(function () {
+//$(document).ready(function () {
   // var imgll= $("#mediumImg")[0].src.split("##")[0];
   // $("#mediumImg").attr('src',imgll);
 
-    alert("点击了");
+//    alert("点击了");
   // 加入购物车
   //   var cookieop = new cookieOperate();
   //   var csrf = cookieop.getCookie('csrftoken');
@@ -30,4 +30,4 @@ $(document).ready(function () {
 
     // });
 
-});
+//});
