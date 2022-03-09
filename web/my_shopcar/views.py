@@ -1,16 +1,16 @@
 import datetime
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from . import models
-
+from my_admin.models import Book
 
 # Create your views here.
 def index(request):
-
-    data = models.Book.objects.all()[0:4]
-    print(data)
-    return render(request, 'bshop/index.html', {'data': data})
+    datas = Book.objects.all()[0:4]
+    username = request.session.get('username')
+    data = {'username': username}
+    return render(request, 'bshop/index.html', {'datas': datas, 'data': data})
 
 
 def prodetail(request):
@@ -38,7 +38,8 @@ def addtocart(request):
             cart.save()
         carts = models.Cart.objects.filter(userinfo=userinfo).all()
         print(carts)
-        return render(request, 'bshop/ShowCart.html', {'allcart': carts, 'allcartnum': carts.count()})
+
+        return render(request, 'bshop/ShowCart.html', {'allcart': carts, 'allcartnum': carts.count(), 'username': username})
 
 
 def getcartnum(request):
@@ -46,20 +47,54 @@ def getcartnum(request):
 
 
 def showCart(request):
-    return render(request, 'bshop/ShowCart.html')
+    username = request.session.get('username')
+    userinfo = models.UserInfo.objects.get(username=username)
+    carts = models.Cart.objects.filter(userinfo=userinfo).all()
+    return render(request, 'bshop/ShowCart.html', {'allcart': carts, 'allcartnum': carts.count(), 'username': username})
 
 
-def add_goods():
-    return None
+def add_goods(request):
+    product_id = request.POST.get('product_pid')
+    username = request.session.get('username')
+    userinfo = models.UserInfo.objects.get(username=username)
+    product = models.Book.objects.get(id=product_id)
+    cart = models.Cart.objects.filter(userinfo=userinfo, product=product).first()
+    data = {}
+    if cart:
+        cart.sumprice = round(float(cart.sumprice) / cart.pnum * (cart.pnum + 1), 2)
+        cart.pnum += 1
+        cart.save()
+        data['msg'] = '请求成功'
+        return JsonResponse(data)
 
+def sub_goods(request):
+    product_id = request.POST.get('product_pid')
+    username = request.session.get('username')
+    userinfo = models.UserInfo.objects.get(username=username)
+    product = models.Book.objects.get(id=product_id)
+    cart = models.Cart.objects.filter(userinfo=userinfo, product=product).first()
+    data = {}
+    if cart:
+        if cart.pnum==1:
+            data['msg'] = '亲! 至少买一个吧'
+        else:
+            cart.sumprice = round (float(cart.sumprice) / cart.pnum * (cart.pnum - 1),2)
+            cart.pnum -= 1
+            cart.save()
+            data['msg'] = '请求成功'
+            return JsonResponse(data)
+    else:
+        data['msg'] = '请添加商品'
+        return JsonResponse(data)
 
-def sub_goods():
-    return None
-
-
-def delCart():
-    return None
-
+def delCart(request):
+    id = request.GET.get('pid')
+    username = request.session.get('username')
+    userinfo = models.UserInfo.objects.get(username=username)
+    product = models.Book.objects.get(id=id)
+    obj = models.Cart.objects.get(userinfo=userinfo, product=product)
+    obj.delete()
+    return showCart(request)
 
 def cash_payment():
     return None
