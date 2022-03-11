@@ -74,9 +74,15 @@ def editaddress(request):
     print(obj[0].id)
     data['userinfo'] = obj[0]
     print(data)
-    address = models.Address(**data)
-    address.save()
-    return HttpResponse(request, 'bshop_user/address.html',{'username': username})
+    address = models.Address.objects.filter(userinfo=obj[0])
+    address.update(**data)
+    address = models.Address.objects.filter(userinfo=obj[0])
+    context = {
+        'username': username,
+        'address': address[0],
+        'addresss': address[0].province + address[0].city + address[0].district + address[0].detail
+    }
+    return render(request, 'bshop_user/address.html', context)
 
 
 def getaddress(request):

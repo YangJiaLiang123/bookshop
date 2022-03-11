@@ -18,3 +18,6 @@ class Address(models.Model):
     get_phone = models.CharField(max_length=128)
     get_code = models.CharField(max_length=128)
 
+    def getFullAddress(self):
+        return self.province + ' ' + self.city + ' ' + self.district + ' ' + self.detail + '(' + self.get_name + '收)' + ' ' + self.get_phone
+
