@@ -20,8 +20,8 @@
 			<div class="welcome fl">欢迎来到图书商城</div>
 			<div class="fr">
 				<div class="login_btn fl">
-					{% if userinfo.islogin %}
-					欢迎您：<em>{{ userinfo.username }}</em>
+					{% if data.username %}
+					欢迎您：<em>{{ data.username }}</em>
 					<span>|</span>
 					<a href="{% url 'bUser :logout' %}">退出</a>
 					{% else %}
@@ -110,14 +110,13 @@
 
 			<ul  class="goods_list fl">
                <span></span>
-				{% for book1 in book1s%}
+				{% for book in datas %}
 				<li>
-
-					<h4><a href="{% url 'bShop:detail' %}?pid={{ book1.pid }}">{{ book1.pdname}}</a></h4>
-                    {% with imgl=book1.pdImage %}
-                        <a href="{% url 'bShop:detail' %}?pid={{ book1.pid }}"><img src="{{ imgl }}"></a>
+					<h4><a href="{% url 'bShop:detail' %}?pid={{ book.id }}">{{ book.name}}</a></h4>
+                    {% with imgl=book.img_url %}
+                        <a href="{% url 'bShop:detail' %}?pid={{ book.id }}"><img src="{{ imgl }}"></a>
                     {% endwith %}
-					<div class="prize">¥ {{ book1.pdprice }}</div>
+					<div class="prize">¥ {{ book.price }}</div>
 				</li>
 				{% endfor %}
 			</ul>

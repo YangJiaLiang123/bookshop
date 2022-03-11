@@ -1,9 +1,9 @@
 import datetime
-
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from . import models
 from my_admin.models import Book
+from my_book.models import Address
 
 # Create your views here.
 def index(request):
@@ -12,16 +12,13 @@ def index(request):
     data = {'username': username}
     return render(request, 'bshop/index.html', {'datas': datas, 'data': data})
 
-
 def prodetail(request):
     id = request.GET.get('pid')
     obj = models.Book.objects.get(id=id)
     username = request.session.get('username')
-
     return render(request, 'bshop/detail1.html', {'product': obj, 'username': username, 'discount': 8.8})
 
-
-def addtocart(request):
+def ddtocart(request):
     if request.method == 'POST':
         data = request.POST.dict()
         data.pop('csrfmiddlewaretoken')
@@ -37,21 +34,16 @@ def addtocart(request):
             cart = models.Cart(userinfo=userinfo, product=product, pnum=data['num'], sumprice=sumprice, time=creatTime)
             cart.save()
         carts = models.Cart.objects.filter(userinfo=userinfo).all()
-        print(carts)
-
         return render(request, 'bshop/ShowCart.html', {'allcart': carts, 'allcartnum': carts.count(), 'username': username})
-
 
 def getcartnum(request):
     return HttpResponse('ok')
-
 
 def showCart(request):
     username = request.session.get('username')
     userinfo = models.UserInfo.objects.get(username=username)
     carts = models.Cart.objects.filter(userinfo=userinfo).all()
     return render(request, 'bshop/ShowCart.html', {'allcart': carts, 'allcartnum': carts.count(), 'username': username})
-
 
 def add_goods(request):
     product_id = request.POST.get('product_pid')
@@ -96,5 +88,30 @@ def delCart(request):
     obj.delete()
     return showCart(request)
 
-def cash_payment():
+
+def cash_payment(request):
+    cartlist = request.POST.get("cartlist")  # 支付的购物车id
+    cartlist = cartlist.split('#')
+    username = request.session.get('username')
+    userinfo = models.UserInfo.objects.filter(username=username)[0]
+    address = Address.objects.filter(userinfo=userinfo)[0]
+    allcartpay = models.PayCart.objects.filter().all()
+    if allcartpay != '':
+        models.PayCart.objects.filter().all().delete()
+    for i in cartlist:
+        if i != '':
+            obj = models.Cart.objects.filter(id=i).first()
+            cartpay = models.PayCart(cart_id=obj.id)
+            cartpay.save()
+    allcart = models.Cart.objects.filter(userinfo=userinfo).all()
+    Clist = models.PayCart.objects.filter().all()
+    context = {
+        'username': username,
+        'curaddress': address.getFullAddress(),
+        'allcart': allcart,
+        'Clists': Clist
+    }
+    return render(request, 'bshop/pay.html', context)
+
+def addtocart():
     return None
