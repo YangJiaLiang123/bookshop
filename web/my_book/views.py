@@ -68,14 +68,15 @@ def logout(request):
 def editaddress(request):
     data = request.POST.dict()
     data.pop('csrfmiddlewaretoken')
-    print(data)
     username = request.session.get('username')
     obj = models.UserInfo.objects.filter(username=username)
-    print(obj[0].id)
     data['userinfo'] = obj[0]
-    print(data)
     address = models.Address.objects.filter(userinfo=obj[0])
-    address.update(**data)
+    if len(address) == 0:
+        address = models.Address(**data)
+        address.save()
+    else:
+        address.update(**data)
     address = models.Address.objects.filter(userinfo=obj[0])
     context = {
         'username': username,
@@ -88,10 +89,7 @@ def editaddress(request):
 def getaddress(request):
     username = request.session.get('username')
     obj = models.UserInfo.objects.filter(username=username)
-    # print(obj[0].username)
-    print(obj.count())
     address = obj[0].userinfo_address.all()
-    print(len(address))
     if len(address) == 0:
         context = {
             'username': username,
@@ -114,13 +112,8 @@ def editpassword(request):
         data = request.POST.dict()
         data.pop('csrfmiddlewaretoken')
         obj = models.UserInfo.objects.filter(username=request.session.get('username'))
-        print('121111', obj[0].username, obj[0].password)
         if check_password(data.get('oldpassword'), obj[0].password):
             password = make_password(data.get('newpassword'), None, 'pbkdf2_sha256')
-            print(password)
-            # obj[0].password = password
-            # print(obj[0].password)
-            # obj[0].save()
             obj.update(password=password)
             print(obj[0].password)
             request.session.flush()
@@ -134,7 +127,6 @@ def editpassword(request):
 
 def personalinfo(request):
     username = request.session.get('username')
-    print(username)
     obj = models.UserInfo.objects.filter(username = username)
     context = {
         'username': username,
