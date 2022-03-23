@@ -51,8 +51,9 @@ class myorder(models.Model):
     # order_id = models.AutoField(primary_key=True)  # 订单id
     ordernum = models.CharField(max_length=32)  # 订单编号
     userinfo = models.ForeignKey(UserInfo, related_name='userinfo_order', on_delete=models.CASCADE)  # 外键
-    product = models.ForeignKey(Book, related_name='book_order', on_delete=models.CASCADE)  # 外键 商品
+    # product = models.ForeignKey(Book, related_name='book_order', on_delete=models.CASCADE)  # 外键 商品
     allprice = models.FloatField()  # 商品总价
     allpnum = models.IntegerField()  # 总数量
-    paydate = models.DateTimeField  # 日期
+    paydate = models.DateTimeField(default = timezone.now)  # 日期
     address = models.CharField(max_length=255)  # 收货地址
+    static = models.CharField(max_length=10,default='待支付')
