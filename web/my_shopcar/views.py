@@ -1,11 +1,14 @@
 import datetime
-from django.http import HttpResponse, JsonResponse
+import time
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
 from . import models
 from my_admin.models import Book
 from my_book.models import Address
-
 # Create your views here.
+from utils.alipay import AliPay
+
+
 def index(request):
     datas = Book.objects.all()[0:4]
     username = request.session.get('username')
@@ -18,7 +21,7 @@ def prodetail(request):
     username = request.session.get('username')
     return render(request, 'bshop/detail1.html', {'product': obj, 'username': username, 'discount': 8.8})
 
-def ddtocart(request):
+def addtocart(request):
     if request.method == 'POST':
         data = request.POST.dict()
         data.pop('csrfmiddlewaretoken')
@@ -104,6 +107,7 @@ def cash_payment(request):
             cartpay = models.PayCart(cart_id=obj.id)
             cartpay.save()
     allcart = models.Cart.objects.filter(userinfo=userinfo).all()
+    print(allcart)
     Clist = models.PayCart.objects.filter().all()
     context = {
         'username': username,
@@ -113,5 +117,58 @@ def cash_payment(request):
     }
     return render(request, 'bshop/pay.html', context)
 
-def addtocart():
-    return None
+alipay = AliPay(appid='2021000119639263', app_notify_url='http://127.0.0.1:8000/shop/checkPay/', app_private_key_path='my_shopcar/pay/keys/app_private_key.pem',
+                 alipay_public_key_path='my_shopcar/pay/keys/alipay_public_key.pem', return_url='http://127.0.0.1:8000/shop/checkPay/', debug=True)
+
+def pay_view(request):
+    import uuid
+    m = request.POST.get('m', 0)
+    params = alipay.direct_pay(subject="购物商城", out_trade_no=str(uuid.uuid4().int)[:16], total_amount=str(m))
+    print(params.split('&'))
+    url = alipay.gateway + '?' + params
+    return HttpResponseRedirect(url)
+
+
+def checkPay(request):
+    params = request.GET.dict()
+    sign = params.pop('sign')
+    if alipay.verify(params, sign):
+        ordernum = params.get('out_trade_no')
+        orderobj = models.myorder.objects.get(ordernum=ordernum)
+        orderobj.static = '支付完成待发货'
+        orderobj.save()
+        carts = request.session.get('carts')
+        for i in carts:
+            cart = models.Cart.objects.get(id=i)
+            cart.delete()
+        del request.session['carts']
+        return HttpResponse("success")
+    del request.session['carts']
+    return HttpResponse("fail")
+
+
+def pay(request):
+    import uuid
+    data = request.POST.dict()
+    data.pop('csrfmiddlewaretoken')
+    address = data.pop('address')
+    allprice = 0
+    allnum = 0
+    carts = list(data.values())
+    for i in data.values():
+        allprice += float(models.Cart.objects.get(id=i).sumprice)
+        allnum += models.Cart.objects.get(id=i).pnum
+    data = {
+        'ordernum': str(uuid.uuid4().int)[:16],
+        'userinfo' : models.UserInfo.objects.get(username=request.session.get("username")),
+        'allprice': allprice,
+        'allpnum' : allnum,
+        'paydate' : time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+        'address' : address,
+    }
+    orderobj = models.myorder(**data)
+    orderobj.save()
+    request.session['carts'] = carts
+    params = alipay.direct_pay(subject="购物商城", out_trade_no=data.get('ordernum'), total_amount=str(allprice))
+    url = alipay.gateway + '?' + params
+    return HttpResponseRedirect(url)

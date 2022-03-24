@@ -11,6 +11,8 @@ urlpatterns = [
     path('subgoods1/',views.sub_goods,name='subgoods'),
     path('deletcart/',views.delCart,name='deletcart'),  # 删除购物车的商品
     path('cash_pay/',views.cash_payment,name='cash_pay'),  # 支付
-
+    path('topay/', views.pay_view, name='topay'),  # 支付
+    path('checkPay/', views.checkPay, name='checkpay'),  # 支付
+    path('pay/', views.pay, name='pay'),  # 支付
 ]
 app_name = 'bShop'
