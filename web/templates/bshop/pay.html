@@ -12,6 +12,27 @@
 	<script src="{% static 'admin/js/html5.js' %}"></script>
 	<script type="text/javascript" src="../../static/js/ie6.js"></script>
 	<script src="{% static 'admin/js/jquery.js' %}"></script>
+	<script>
+		function pay(allcart) {
+		    var cookieop = new cookieOperate();
+		    var csrf = cookieop.getCookie('csrftoken');
+		    $.ajax({
+			    url: '/shop/pay/',
+			    type: 'POST',
+			    data: {'allcart': allcart},
+
+			    beforeSend: function (request) {
+				    request.setRequestHeader("X-CSRFToken", csrf);
+			    },
+			    success: function (data) {
+				    window.location = window.location;
+			    },
+			    error:function (data) {
+				    alert("失败")
+			    }
+		    });
+        }
+	</script>
 </head>
 <body>
 <div class="header_con">
@@ -56,7 +77,7 @@
 <div class="common_list_con clearfix">
 	<div class="pay_style_con clearfix">
 		<input type="radio" name="pay_style" checked="">
-		<label class="cash">货到付款</label>
+		<label class="cash">支付宝支付</label>
 		<input type="radio" name="pay_style">
 		<label class="weixin">微信支付</label>
 		<input type="radio" name="pay_style">
@@ -75,20 +96,21 @@
 	</ul>
 </div>
 {% for cat in allcart %}
-	{% for clist in Clists %}
-		{% if cat.id == clist.cart_id %}
-			<ul class="goods_list_td clearfix" id="123">
-				<li class="col01">{{ forloop.counter }}</li>
-				<li class="col02"><img class="imgl" src="{{ cat.product.img_url }}"></li>
-				<li class="col03"> {{ cat.product.name }}</li>
-				<li class="col04">{{ cat.product.price }}</li>
-				<li class="col06"><em class="num">{{ cat.pnum }}</em></li>
-				<li class="col07"><em class="price">{{ cat.sumprice }}</em>元</li>
-			</ul>
-		{% endif %}
-	{% endfor %}
+{% for clist in Clists %}
+{% if cat.id == clist.cart_id %}
+<ul class="goods_list_td clearfix" id="123">
+	<li class="col01">{{ forloop.counter }}</li>
+	<li class="col02"><img class="imgl" src="{{ cat.product.img_url }}"></li>
+	<li class="col03"> {{ cat.product.name }}</li>
+	<li class="col04">{{ cat.product.price }}</li>
+	<li class="col06"><em class="num">{{ cat.pnum }}</em></li>
+	<li class="col07"><em class="price">{{ cat.sumprice }}</em>元</li>
+</ul>
+{% endif %}
+{% endfor %}
 {% endfor %}
 <h3 class="common_title">总金额结算</h3>
+
 <div class="common_list_con clearfix">
 	<div class="settle_con">
 		<div class="total_goods_count">共<em id="shuliang">0</em>件商品，商品总金额<b id="zong">0元</b></div>
@@ -96,9 +118,26 @@
 		<div class="total_pay">应付款：<b id="fu">0元</b></div>
 	</div>
 </div>
-<div class="order_submit clearfix">
-	<a href="javascript:;" id="order_btn">支付</a>
-</div>
+<form action="{% url 'bShop:pay'%}" method="post">
+	<div class="order_submit clearfix">
+		{% csrf_token %}
+		{% for cat in allcart %}
+		{% for clist in Clists %}
+		{% if cat.id == clist.cart_id %}
+		<input type="hidden" name="cat{{ cat.id }}" value="{{ cat.id }}">
+		{% endif %}
+		{% endfor %}
+		{% endfor %}
+		<input type="hidden" name="address" value="{{ curaddress }}">
+		<input type="submit" value="ok">
+		<a href="javascript:;" id="order_btn" onclick="pay({{ allcart }})">支付</a>
+	</div>
+</form>
+<!--<form action="{% url 'bShop:topay'%}" method="post">-->
+<!--	{% csrf_token %}-->
+<!--	<input type="text" name="m">-->
+<!--	<input type="submit" value="ok">-->
+<!--</form>-->
 <div class="center_con clearfix">
 	<div class="footer_nav_box">
 		<div class="footer_nav">
@@ -126,7 +165,7 @@
 </div>
 
 <script>
-     $(function () {
+    $(function () {
          //总价格
     totalPrice();
 
@@ -149,7 +188,7 @@
         })
         $('#shuliang').text(sum);
     }
- });
+    });
 
 </script>
 </body>
